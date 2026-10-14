@@ -1,0 +1,1194 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClassHub XII-C | Student Display</title>
+
+<style>
+:root {
+  --bg: #f4f7fc;
+  --card: #ffffff;
+  --text: #17233c;
+  --muted: #71809b;
+  --blue: #3767e8;
+  --blue-light: #eaf0ff;
+  --border: #e7ecf5;
+  --green: #16865c;
+  --red: #d94b5b;
+  --shadow: 0 8px 28px rgba(30, 55, 100, .06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+button { font: inherit; }
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 245px;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  padding: 25px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px 28px;
+}
+
+.brand-icon {
+  width: 43px;
+  height: 43px;
+  border-radius: 14px;
+  background: var(--blue);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -.5px;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nav-label {
+  margin: 12px 12px 10px;
+  color: #9aa5b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav button {
+  border: 0;
+  background: transparent;
+  color: #63718c;
+  padding: 13px 14px;
+  text-align: left;
+  border-radius: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 650;
+  transition: .2s;
+}
+
+.nav button:hover {
+  background: #f5f7fc;
+  color: var(--blue);
+}
+
+.nav button.active {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+.nav .ico {
+  width: 20px;
+  text-align: center;
+  font-size: 17px;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 18px 10px 0;
+}
+
+.class-mini {
+  background: #f5f7fc;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 15px;
+}
+
+.class-mini strong {
+  display: block;
+  font-size: 13px;
+}
+
+.class-mini p {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 34px 40px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--blue);
+  text-transform: uppercase;
+}
+
+.topbar h2 {
+  font-size: 27px;
+  letter-spacing: -.8px;
+  margin: 7px 0 0;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 20px;
+  background: #e8f8ef;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.connection.offline {
+  background: #fff0f0;
+  color: var(--red);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.refresh {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  padding: 10px 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.refresh:hover { border-color: var(--blue); }
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 31px;
+  border-radius: 22px;
+  color: white;
+  background: linear-gradient(120deg, #254fcb, #4979f1);
+  box-shadow: 0 14px 32px rgba(55, 103, 232, .18);
+  margin-bottom: 25px;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  right: -70px;
+  top: -100px;
+  border: 45px solid rgba(255,255,255,.09);
+  border-radius: 50%;
+}
+
+.hero-tag {
+  display: inline-block;
+  border-radius: 7px;
+  padding: 6px 9px;
+  background: rgba(255,255,255,.16);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.hero h3 {
+  font-size: clamp(25px, 3vw, 36px);
+  letter-spacing: -1px;
+  margin: 16px 0 9px;
+}
+
+.hero p {
+  color: rgba(255,255,255,.83);
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 520px;
+}
+
+.hero-date {
+  margin-top: 21px;
+  font-size: 12px;
+  font-weight: 650;
+  color: rgba(255,255,255,.9);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.stat-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: var(--blue-light);
+  font-size: 16px;
+}
+
+.stat-value {
+  font-size: 27px;
+  font-weight: 800;
+  margin-top: 15px;
+  letter-spacing: -.8px;
+  overflow-wrap: anywhere;
+}
+
+.stat-foot {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 6px;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+  gap: 20px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+  margin-bottom: 20px;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.panel-head h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.panel-head button {
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  padding: 6px 0 6px 8px;
+}
+
+.item {
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 15px;
+  margin-bottom: 11px;
+  overflow-wrap: anywhere;
+}
+
+.item:last-child { margin-bottom: 0; }
+
+.item-title {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  margin: 0 0 7px;
+}
+
+.item-body {
+  color: #65738d;
+  font-size: 12px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.pill {
+  display: inline-block;
+  border-radius: 7px;
+  padding: 5px 8px;
+  background: #f0f4ff;
+  color: #4165c9;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.pill.green {
+  background: #e7f8ee;
+  color: #16865c;
+}
+
+.pill.orange {
+  background: #fff4df;
+  color: #a76a00;
+}
+
+.pill.red {
+  background: #fff0f0;
+  color: #c23c4c;
+}
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: 65px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule-row:last-child { border-bottom: 0; }
+
+.schedule-time {
+  background: #f0f4ff;
+  color: var(--blue);
+  text-align: center;
+  border-radius: 9px;
+  padding: 10px 5px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.schedule-subject {
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.schedule-day {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.cash-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cash-box {
+  background: #f6f8fd;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.cash-box p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 0 0 9px;
+}
+
+.cash-box strong {
+  font-size: clamp(16px, 2vw, 23px);
+  overflow-wrap: anywhere;
+}
+
+.cash-box.in strong { color: var(--green); }
+.cash-box.out strong { color: var(--red); }
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 420px;
+}
+
+th {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  text-align: left;
+  padding: 12px 10px;
+  background: #f8faff;
+}
+
+td {
+  font-size: 12px;
+  padding: 13px 10px;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+tr:last-child td { border-bottom: 0; }
+
+.money-in { color: var(--green); font-weight: 800; }
+.money-out { color: var(--red); font-weight: 800; }
+
+.empty {
+  border: 1px dashed #dce3ef;
+  background: #fafbfe;
+  color: var(--muted);
+  text-align: center;
+  border-radius: 12px;
+  padding: 25px 15px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.notice {
+  margin-bottom: 18px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  background: #fff4df;
+  color: #8b5b00;
+  font-size: 12px;
+  line-height: 1.6;
+  display: none;
+}
+
+.notice.show { display: block; }
+
+.footer {
+  color: #98a3b7;
+  font-size: 10px;
+  text-align: center;
+  margin-top: 18px;
+}
+
+.mobile-menu { display: none; }
+
+@media (max-width: 1050px) {
+  .sidebar { width: 210px; }
+  .main { padding: 24px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 650px) {
+  .app { display: block; }
+  .sidebar {
+    width: 100%;
+    padding: 15px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { padding: 0 3px 14px; }
+  .sidebar-bottom { display: none; }
+  .nav-label { margin: 6px 3px 8px; }
+  .nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .nav button {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+  .nav .ico { font-size: 14px; width: auto; }
+  .main { padding: 20px 14px 30px; }
+  .topbar { align-items: flex-start; margin-bottom: 20px; }
+  .topbar h2 { font-size: 23px; }
+  .top-actions { align-items: flex-end; flex-direction: column; gap: 7px; }
+  .connection { font-size: 10px; }
+  .refresh { padding: 7px 10px; font-size: 11px; }
+  .hero { padding: 23px; border-radius: 17px; }
+  .hero h3 { font-size: 26px; }
+  .stats { gap: 10px; }
+  .stat { padding: 15px; }
+  .stat-value { font-size: 23px; }
+  .stat-label { font-size: 11px; }
+  .stat-foot { font-size: 10px; }
+  .panel { padding: 16px; }
+  .cash-summary { gap: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">C</div>
+      <div>
+        <h1>ClassHub</h1>
+        <p>Student Portal · XII-C</p>
+      </div>
+    </div>
+
+    <div class="nav-label">MENU UTAMA</div>
+    <nav class="nav">
+      <button class="active" data-page="ringkasan" onclick="showPage('ringkasan',this)">
+        <span class="ico">▦</span> Ringkasan
+      </button>
+      <button data-page="pengumuman" onclick="showPage('pengumuman',this)">
+        <span class="ico">◉</span> Pengumuman
+      </button>
+      <button data-page="tugas" onclick="showPage('tugas',this)">
+        <span class="ico">☷</span> Tugas & Agenda
+      </button>
+      <button data-page="jadwal" onclick="showPage('jadwal',this)">
+        <span class="ico">▦</span> Jadwal Kelas
+      </button>
+      <button data-page="kas" onclick="showPage('kas',this)">
+        <span class="ico">◎</span> Kas Kelas
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="class-mini">
+        <strong>🏫 Kelas XII-C</strong>
+        <p>Satu tempat untuk informasi dan kebutuhan kelas.</p>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">CLASSHUB / XII-C</div>
+        <h2 id="pageTitle">Ringkasan Kelas</h2>
+      </div>
+      <div class="top-actions">
+        <div class="connection offline" id="connection">
+          <span class="dot"></span>
+          <span id="connectionText">Menghubungkan...</span>
+        </div>
+        <button class="refresh" onclick="loadData(true)">↻ Refresh</button>
+      </div>
+    </header>
+
+    <div class="notice" id="notice"></div>
+
+    <section class="page active" id="page-ringkasan">
+      <div class="hero">
+        <span class="hero-tag">STUDENT DASHBOARD</span>
+        <h3>Welcome to ClassHub 👋</h3>
+        <p>Semua informasi kelas XII-C, mulai dari pengumuman, tugas, jadwal, hingga transparansi kas kelas, ada di satu tempat.</p>
+        <div class="hero-date" id="todayDate">Memuat tanggal...</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Pengumuman</span>
+            <span class="stat-icon">📢</span>
+          </div>
+          <div class="stat-value" id="statAnnouncements">—</div>
+          <div class="stat-foot">Informasi kelas</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Tugas & Agenda</span>
+            <span class="stat-icon">📝</span>
+          </div>
+          <div class="stat-value" id="statTasks">—</div>
+          <div class="stat-foot">Tercatat di ClassHub</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Jadwal</span>
+            <span class="stat-icon">📅</span>
+          </div>
+          <div class="stat-value" id="statSchedule">—</div>
+          <div class="stat-foot">Jadwal pelajaran</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Saldo Kas</span>
+            <span class="stat-icon">💰</span>
+          </div>
+          <div class="stat-value" id="statBalance" style="font-size:clamp(17px,2vw,25px)">Rp0</div>
+          <div class="stat-foot">Berdasarkan transaksi tercatat</div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>📢 Pengumuman Terbaru</h3>
+            <button onclick="showPage('pengumuman')">Lihat semua →</button>
+          </div>
+          <div id="homeAnnouncements"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>📝 Tugas & Agenda</h3>
+            <button onclick="showPage('tugas')">Lihat semua →</button>
+          </div>
+          <div id="homeTasks"></div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>📅 Jadwal Kelas</h3>
+            <button onclick="showPage('jadwal')">Lihat semua →</button>
+          </div>
+          <div id="homeSchedule"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>💰 Ringkasan Kas</h3>
+            <button onclick="showPage('kas')">Lihat rincian →</button>
+          </div>
+          <div id="homeCash"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-pengumuman">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Semua Pengumuman</h3>
+        </div>
+        <div id="allAnnouncements"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-tugas">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Daftar Tugas & Agenda</h3>
+        </div>
+        <div id="allTasks"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-jadwal">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Jadwal Pelajaran Kelas</h3>
+        </div>
+        <div id="allSchedule"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-kas">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Transparansi Kas Kelas</h3>
+        </div>
+
+        <div class="cash-summary">
+          <div class="cash-box in">
+            <p>Total Pemasukan</p>
+            <strong id="totalIncome">Rp0</strong>
+          </div>
+          <div class="cash-box out">
+            <p>Total Pengeluaran</p>
+            <strong id="totalExpense">Rp0</strong>
+          </div>
+        </div>
+
+        <div class="cash-box" style="margin-bottom:18px">
+          <p>Saldo Saat Ini</p>
+          <strong id="cashBalance">Rp0</strong>
+        </div>
+
+        <div class="panel-head">
+          <h3>Riwayat Transaksi</h3>
+        </div>
+        <div id="allTransactions"></div>
+      </div>
+    </section>
+
+    <div class="footer">
+      CLASSHUB XII-C · Informasi diperbarui otomatis · Data bersumber dari database kelas
+    </div>
+  </main>
+</div>
+
+<script>
+/*
+  URL Google Apps Script yang dipakai bersama admin.html.
+  Endpoint harus mendukung JSONP agar data dapat dibaca browser.
+*/
+const API_URL = "https://script.google.com/macros/s/AKfycbzk0SarZDEdoCYtg_LLSrtIxqB5_Ns0a7JidhVK-oocSbtJd2R8gUmkq12FLXlxS8I9/exec";
+
+let data = {
+  announcements: [],
+  tasks: [],
+  schedule: [],
+  transactions: []
+};
+
+let isLoading = false;
+let lastSuccessfulLoad = null;
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0
+  }).format(Number(value) || 0);
+}
+
+function formatDate(value) {
+  if (!value) return "Tanggal belum diatur";
+
+  const str = String(value);
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if (match) {
+    const date = new Date(
+      Number(match[1]),
+      Number(match[2]) - 1,
+      Number(match[3])
+    );
+
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return str;
+
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+}
+
+function sortByDateNewest(items, field = "date") {
+  return [...items].sort((a, b) => {
+    const da = new Date(a[field] || 0).getTime() || 0;
+    const db = new Date(b[field] || 0).getTime() || 0;
+    return db - da;
+  });
+}
+
+function showEmpty(message = "Belum ada data yang ditambahkan.") {
+  return `<div class="empty">${escapeHTML(message)}</div>`;
+}
+
+function setConnection(online, message) {
+  $("connection").classList.toggle("offline", !online);
+  $("connectionText").textContent = message;
+}
+
+function showNotice(message) {
+  $("notice").textContent = message;
+  $("notice").classList.add("show");
+}
+
+function hideNotice() {
+  $("notice").classList.remove("show");
+}
+
+function jsonpLoad() {
+  return new Promise((resolve, reject) => {
+    const callback = "classHubDisplay_" +
+      Date.now() + "_" + Math.floor(Math.random() * 1000000);
+
+    const script = document.createElement("script");
+    let finished = false;
+
+    function cleanup() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      delete window[callback];
+      script.remove();
+    }
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Koneksi database terlalu lama."));
+    }, 20000);
+
+    window[callback] = result => {
+      cleanup();
+
+      if (result && result.ok && result.data) {
+        resolve(result.data);
+      } else {
+        reject(new Error(
+          result?.error || "Database tidak mengembalikan data yang valid."
+        ));
+      }
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error(
+        "Gagal membaca database. Periksa URL dan deployment Apps Script."
+      ));
+    };
+
+    script.src = API_URL +
+      "?callback=" + encodeURIComponent(callback) +
+      "&_=" + Date.now();
+
+    document.head.appendChild(script);
+  });
+}
+
+function normalizeData(remote) {
+  return {
+    announcements: Array.isArray(remote.announcements)
+      ? remote.announcements : [],
+    tasks: Array.isArray(remote.tasks)
+      ? remote.tasks : [],
+    schedule: Array.isArray(remote.schedule)
+      ? remote.schedule : [],
+    transactions: Array.isArray(remote.transactions)
+      ? remote.transactions : []
+  };
+}
+
+async function loadData(showMessage = false) {
+  if (isLoading) return;
+  isLoading = true;
+
+  if (!lastSuccessfulLoad) {
+    setConnection(false, "Menghubungkan...");
+  }
+
+  try {
+    const remote = await jsonpLoad();
+    data = normalizeData(remote);
+    lastSuccessfulLoad = new Date();
+
+    setConnection(true, "Database terhubung");
+    hideNotice();
+    renderAll();
+
+    if (showMessage) {
+      showNotice("Data berhasil diperbarui dari database kelas.");
+      setTimeout(hideNotice, 3500);
+    }
+  } catch (error) {
+    console.error("ClassHub:", error);
+
+    setConnection(false, "Koneksi bermasalah");
+
+    if (!lastSuccessfulLoad) {
+      showNotice(
+        "Data belum berhasil dimuat. Pastikan Apps Script sudah mendukung JSONP, " +
+        "deployment sudah diperbarui, dan URL database benar. Detail: " +
+        error.message
+      );
+    } else {
+      showNotice(
+        "Koneksi sedang bermasalah. Data terakhir yang berhasil dimuat masih ditampilkan."
+      );
+    }
+  } finally {
+    isLoading = false;
+  }
+}
+
+function showPage(page, button = null) {
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.toggle("active", section.id === "page-" + page);
+  });
+
+  document.querySelectorAll(".nav button").forEach(navButton => {
+    navButton.classList.toggle(
+      "active",
+      navButton.dataset.page === page
+    );
+  });
+
+  const titles = {
+    ringkasan: "Ringkasan Kelas",
+    pengumuman: "Pengumuman Kelas",
+    tugas: "Tugas & Agenda",
+    jadwal: "Jadwal Kelas",
+    kas: "Kas Kelas"
+  };
+
+  $("pageTitle").textContent = titles[page] || "ClassHub XII-C";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function announcementCard(item) {
+  return `
+    <article class="item">
+      <h4 class="item-title">${escapeHTML(item.title || "Tanpa judul")}</h4>
+      <div class="item-body">${escapeHTML(item.body || "Tidak ada detail pengumuman.")}</div>
+      <div class="item-meta">
+        <span class="pill">📅 ${escapeHTML(formatDate(item.date))}</span>
+      </div>
+    </article>
+  `;
+}
+
+function taskCard(item) {
+  const deadline = item.deadline
+    ? formatDate(item.deadline)
+    : "Belum ditentukan";
+
+  return `
+    <article class="item">
+      <h4 class="item-title">${escapeHTML(item.title || "Tanpa judul")}</h4>
+      <div class="item-body">${escapeHTML(item.subject || "Agenda kelas")}</div>
+      <div class="item-meta">
+        <span class="pill">📚 ${escapeHTML(item.subject || "Umum")}</span>
+        <span class="pill orange">⏰ ${escapeHTML(deadline)}</span>
+      </div>
+    </article>
+  `;
+}
+
+function scheduleCard(item) {
+  return `
+    <div class="schedule-row">
+      <div class="schedule-time">${escapeHTML(item.time || "—")}</div>
+      <div>
+        <div class="schedule-subject">${escapeHTML(item.subject || "Mata pelajaran")}</div>
+        <div class="schedule-day">${escapeHTML(item.day || "Hari belum diatur")}</div>
+      </div>
+    </div>
+  `;
+}
+
+function transactionTable(items, limit = null) {
+  const shown = limit ? items.slice(0, limit) : items;
+
+  if (!shown.length) {
+    return showEmpty("Belum ada transaksi kas kelas.");
+  }
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Keterangan</th>
+            <th>Jenis</th>
+            <th>Nominal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${shown.map(item => {
+            const isIncome = item.type === "in";
+            return `
+              <tr>
+                <td>${escapeHTML(formatDate(item.date))}</td>
+                <td>${escapeHTML(item.note || "Transaksi kas")}</td>
+                <td>
+                  <span class="pill ${isIncome ? "green" : "red"}">
+                    ${isIncome ? "Masuk" : "Keluar"}
+                  </span>
+                </td>
+                <td class="${isIncome ? "money-in" : "money-out"}">
+                  ${isIncome ? "+" : "−"}${escapeHTML(formatMoney(item.amount))}
+                </td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function calculateCash() {
+  let income = 0;
+  let expense = 0;
+
+  data.transactions.forEach(item => {
+    const amount = Number(item.amount) || 0;
+    if (item.type === "in") income += amount;
+    else expense += amount;
+  });
+
+  return { income, expense, balance: income - expense };
+}
+
+function renderAll() {
+  $("todayDate").textContent = new Date().toLocaleDateString("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  const cash = calculateCash();
+
+  $("statAnnouncements").textContent = data.announcements.length;
+  $("statTasks").textContent = data.tasks.length;
+  $("statSchedule").textContent = data.schedule.length;
+  $("statBalance").textContent = formatMoney(cash.balance);
+
+  const announcements = sortByDateNewest(data.announcements);
+  const tasks = [...data.tasks].sort((a, b) => {
+    const da = a.deadline || "9999-12-31";
+    const db = b.deadline || "9999-12-31";
+    return da.localeCompare(db);
+  });
+  const schedule = [...data.schedule];
+  const transactions = sortByDateNewest(data.transactions);
+
+  $("homeAnnouncements").innerHTML = announcements.length
+    ? announcements.slice(0, 3).map(announcementCard).join("")
+    : showEmpty("Belum ada pengumuman dari pengurus kelas.");
+
+  $("allAnnouncements").innerHTML = announcements.length
+    ? announcements.map(announcementCard).join("")
+    : showEmpty("Belum ada pengumuman dari pengurus kelas.");
+
+  $("homeTasks").innerHTML = tasks.length
+    ? tasks.slice(0, 4).map(taskCard).join("")
+    : showEmpty("Belum ada tugas atau agenda.");
+
+  $("allTasks").innerHTML = tasks.length
+    ? tasks.map(taskCard).join("")
+    : showEmpty("Belum ada tugas atau agenda.");
+
+  $("homeSchedule").innerHTML = schedule.length
+    ? schedule.slice(0, 5).map(scheduleCard).join("")
+    : showEmpty("Jadwal belum ditambahkan.");
+
+  $("allSchedule").innerHTML = schedule.length
+    ? schedule.map(scheduleCard).join("")
+    : showEmpty("Jadwal belum ditambahkan.");
+
+  $("homeCash").innerHTML = `
+    <div class="cash-summary">
+      <div class="cash-box in">
+        <p>Pemasukan</p>
+        <strong>${escapeHTML(formatMoney(cash.income))}</strong>
+      </div>
+      <div class="cash-box out">
+        <p>Pengeluaran</p>
+        <strong>${escapeHTML(formatMoney(cash.expense))}</strong>
+      </div>
+    </div>
+    <div class="cash-box">
+      <p>Saldo Saat Ini</p>
+      <strong>${escapeHTML(formatMoney(cash.balance))}</strong>
+    </div>
+  `;
+
+  $("totalIncome").textContent = formatMoney(cash.income);
+  $("totalExpense").textContent = formatMoney(cash.expense);
+  $("cashBalance").textContent = formatMoney(cash.balance);
+  $("allTransactions").innerHTML = transactionTable(transactions);
+}
+
+// Mulai mengambil data saat halaman dibuka.
+renderAll();
+loadData();
+
+// Cek pembaruan database setiap 15 detik.
+setInterval(() => loadData(false), 15000);
+</script>
+</body>
+</html>

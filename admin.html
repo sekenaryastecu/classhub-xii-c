@@ -1,0 +1,979 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClassHub XII-C — Admin</title>
+
+<style>
+:root {
+  --blue: #536dfe;
+  --ink: #20243a;
+  --muted: #8188a3;
+  --line: #e9ecf5;
+  --bg: #f6f7fb;
+  --green: #159a70;
+  --red: #d94e67;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px "Segoe UI", Arial, sans-serif;
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.layout { display: flex; min-height: 100vh; }
+.side {
+  width: 230px;
+  background: white;
+  border-right: 1px solid var(--line);
+  padding: 24px 15px;
+  flex-shrink: 0;
+}
+.brand {
+  font-size: 22px;
+  font-weight: 800;
+  padding: 0 10px 26px;
+}
+.brand span { color: var(--blue); }
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  padding: 14px 10px 8px;
+}
+.nav {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 12px;
+  border-radius: 10px;
+  color: #737b95;
+  margin: 2px 0;
+}
+.nav.active, .nav:hover {
+  background: #edf0ff;
+  color: var(--blue);
+}
+main { min-width: 0; flex: 1; }
+.top {
+  background: white;
+  border-bottom: 1px solid var(--line);
+  padding: 17px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.badge {
+  background: #e5f7ef;
+  color: #14805b;
+  padding: 8px 12px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.content {
+  max-width: 1150px;
+  margin: auto;
+  padding: 28px;
+}
+.title {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: start;
+  margin-bottom: 22px;
+}
+.title h1 { font-size: 27px; margin: 0 0 7px; }
+.muted { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.btn {
+  border: 0;
+  border-radius: 9px;
+  background: var(--blue);
+  color: white;
+  padding: 11px 14px;
+  font-weight: 600;
+}
+.btn.light {
+  background: white;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.btn.danger { background: #fff0f2; color: var(--red); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+.card h2 { font-size: 16px; margin: 0 0 16px; }
+.value { font-size: 25px; font-weight: 800; margin: 10px 0 4px; }
+.label { font-size: 12px; color: var(--muted); }
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.field { margin-bottom: 12px; }
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  border: 1px solid #dfe3ef;
+  border-radius: 9px;
+  padding: 11px;
+  background: white;
+  color: var(--ink);
+}
+.field textarea { min-height: 90px; resize: vertical; }
+.entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+  align-items: start;
+}
+.entry:last-child { border-bottom: 0; }
+.entry strong { display: block; margin-bottom: 5px; }
+.actions { display: flex; gap: 6px; flex-shrink: 0; }
+.smallbtn {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 9px;
+  background: white;
+  font-size: 12px;
+}
+.empty { color: var(--muted); padding: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+td, th {
+  text-align: left;
+  padding: 11px 8px;
+  border-bottom: 1px solid var(--line);
+}
+th { color: var(--muted); }
+.tablewrap { overflow: auto; }
+.note {
+  background: #fff8e8;
+  border: 1px solid #ffedc1;
+  color: #76591b;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.status {
+  padding: 12px;
+  border-radius: 9px;
+  background: #edf0ff;
+  color: #465bd1;
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.status.error { background: #fff0f2; color: #b62f49; }
+.status.success { background: #e5f7ef; color: #14805b; }
+@media(max-width:760px) {
+  .side { width: 175px; padding: 16px 8px; }
+  .content { padding: 18px 13px; }
+  .top { padding: 15px; }
+  .split, .stats { grid-template-columns: 1fr; }
+  .title h1 { font-size: 23px; }
+}
+@media(max-width:520px) {
+  .layout { display: block; }
+  .side { width: 100%; padding: 12px; }
+  .brand { padding: 4px 8px 10px; }
+  .hint { display: none; }
+  .nav { display: inline-block; width: auto; padding: 9px; font-size: 12px; }
+  .content { padding: 16px 12px; }
+  .title { display: block; }
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+  <aside class="side">
+    <div class="brand">Class<span>Hub.</span></div>
+    <div class="hint">PENGELOLAAN KELAS</div>
+
+    <button class="nav active" data-page="dashboard">▦ Dashboard</button>
+    <button class="nav" data-page="pengumuman">📣 Pengumuman</button>
+    <button class="nav" data-page="tugas">✓ Tugas & agenda</button>
+    <button class="nav" data-page="jadwal">🗓 Jadwal kelas</button>
+    <button class="nav" data-page="kas">Rp Kas kelas</button>
+
+    <div class="hint">HALAMAN SISWA</div>
+    <button class="nav" id="openDisplay">↗ Buka display siswa</button>
+  </aside>
+
+  <main>
+    <header class="top">
+      <div>
+        <strong>Admin Workspace · XII-C</strong>
+        <div class="muted">Kelola informasi kelas</div>
+      </div>
+      <span class="badge" id="connectionBadge">MENGHUBUNGKAN...</span>
+    </header>
+
+    <div class="content">
+      <div id="statusBox" class="status">Menghubungkan ke database...</div>
+      <div id="app"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+/* =====================================
+   1. KONFIGURASI DATABASE
+===================================== */
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbzk0SarZDEdoCYtg_LLSrtIxqB5_Ns0a7JidhVK-oocSbtJd2R8gUmkq12FLXlxS8I9/exec";
+
+const TOKEN_KEY = "classhub_admin_token";
+
+let data = {
+  announcements: [],
+  tasks: [],
+  schedule: [],
+  transactions: []
+};
+
+let page = "dashboard";
+let busy = false;
+
+
+/* =====================================
+   2. STATUS WEBSITE
+===================================== */
+
+function setStatus(message, type = "") {
+  const box = document.getElementById("statusBox");
+  box.textContent = message;
+  box.className = "status" + (type ? " " + type : "");
+}
+
+function setConnection(online) {
+  const badge = document.getElementById("connectionBadge");
+  badge.textContent = online ? "DATABASE ONLINE" : "DATABASE ERROR";
+  badge.style.background = online ? "#e5f7ef" : "#fff0f2";
+  badge.style.color = online ? "#14805b" : "#b62f49";
+}
+
+
+/* =====================================
+   3. MEMBACA DATA GOOGLE SHEETS
+   Menggunakan JSONP
+===================================== */
+
+function remoteLoad() {
+  return new Promise((resolve, reject) => {
+    const callback = "classHub_" + Date.now() + "_" +
+      Math.floor(Math.random() * 100000);
+
+    const script = document.createElement("script");
+    let finished = false;
+
+    function cleanup() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      delete window[callback];
+      script.remove();
+    }
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Koneksi database timeout."));
+    }, 20000);
+
+    window[callback] = result => {
+      cleanup();
+
+      if (result && result.ok && result.data) {
+        resolve(result.data);
+      } else {
+        reject(new Error(
+          result?.error || "Gagal membaca database."
+        ));
+      }
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error(
+        "Tidak bisa menghubungi database. Periksa URL dan deployment."
+      ));
+    };
+
+    script.src = API_URL +
+      "?callback=" + encodeURIComponent(callback) +
+      "&_=" + Date.now();
+
+    document.head.appendChild(script);
+  });
+}
+
+
+/* =====================================
+   4. TOKEN ADMIN
+===================================== */
+
+function getAdminToken() {
+  let token = sessionStorage.getItem(TOKEN_KEY);
+
+  if (token) return token;
+
+  token = prompt(
+    "Masukkan ADMIN_TOKEN yang lo simpan di Script Properties:"
+  );
+
+  if (!token || !token.trim()) {
+    throw new Error("Penyimpanan dibatalkan.");
+  }
+
+  token = token.trim();
+  sessionStorage.setItem(TOKEN_KEY, token);
+
+  return token;
+}
+
+
+/* =====================================
+   5. MENYIMPAN DATA ONLINE
+===================================== */
+
+function sameData(a, b) {
+  const keys = [
+    "announcements",
+    "tasks",
+    "schedule",
+    "transactions"
+  ];
+
+  return keys.every(key => {
+    const left = a[key] || [];
+    const right = b[key] || [];
+
+    if (left.length !== right.length) return false;
+
+    return left.every(item => {
+      const saved = right.find(
+        x => String(x.id) === String(item.id)
+      );
+
+      if (!saved) return false;
+
+      return JSON.stringify(item) === JSON.stringify(saved);
+    });
+  });
+}
+
+async function saveOnline() {
+  if (busy) {
+    throw new Error("Tunggu proses sebelumnya selesai.");
+  }
+
+  busy = true;
+  const buttons = document.querySelectorAll(
+    "#app button, #app input, #app textarea, #app select"
+  );
+
+  buttons.forEach(button => button.disabled = true);
+  setStatus("Menyimpan perubahan ke Google Sheets...");
+
+  try {
+    const token = getAdminToken();
+
+    const snapshot = JSON.parse(JSON.stringify(data));
+
+    /*
+      mode no-cors membuat browser tidak bisa membaca
+      respons POST secara langsung. Karena itu, setelah
+      mengirim data kita membaca ulang database untuk
+      memverifikasi hasilnya.
+    */
+    await fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "save",
+        token: token,
+        data: snapshot
+      })
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 1800));
+
+    const saved = await remoteLoad();
+
+    if (!sameData(snapshot, saved)) {
+      sessionStorage.removeItem(TOKEN_KEY);
+      data = saved;
+
+      throw new Error(
+        "Data belum terverifikasi. Periksa token admin, " +
+        "izin deployment, dan versi Apps Script."
+      );
+    }
+
+    data = saved;
+    setConnection(true);
+    setStatus("Data berhasil disimpan dan diverifikasi.", "success");
+
+  } catch (error) {
+    setStatus(error.message, "error");
+    throw error;
+
+  } finally {
+    busy = false;
+    buttons.forEach(button => button.disabled = false);
+    render();
+  }
+}
+
+
+/* =====================================
+   6. FUNGSI BANTUAN
+===================================== */
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function money(value) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0
+  }).format(Number(value) || 0);
+}
+
+function total(type) {
+  return data.transactions
+    .filter(item => item.type === type)
+    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+}
+
+function newId() {
+  return Date.now().toString() +
+    Math.floor(Math.random() * 10000);
+}
+
+function empty(message) {
+  return `<div class="empty">${esc(message)}</div>`;
+}
+
+function card(title, body) {
+  return `<section class="card"><h2>${title}</h2>${body}</section>`;
+}
+
+function field(label, name, placeholder = "", type = "text") {
+  return `
+    <div class="field">
+      <label>${esc(label)}</label>
+      <input name="${esc(name)}"
+        type="${esc(type)}"
+        placeholder="${esc(placeholder)}"
+        required>
+    </div>`;
+}
+
+
+/* =====================================
+   7. DAFTAR DATA
+===================================== */
+
+function list(items, type) {
+  if (!items.length) return empty("Belum ada data.");
+
+  return items.slice().reverse().map(item => `
+    <div class="entry">
+      <div>
+        <strong>${esc(
+          item.title || item.subject || item.note || "Data"
+        )}</strong>
+        <div class="muted">${esc(
+          item.body ||
+          [item.subject, item.deadline || item.date]
+            .filter(Boolean).join(" · ") ||
+          item.day + " " + item.time
+        )}</div>
+      </div>
+      <div class="actions">
+        <button class="smallbtn"
+          data-del="${esc(type)}"
+          data-id="${esc(item.id)}">Hapus</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function cashTable() {
+  if (!data.transactions.length) {
+    return empty("Belum ada transaksi.");
+  }
+
+  return `
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Keterangan</th>
+            <th>Jenis</th>
+            <th>Nominal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.transactions.slice().reverse().map(item => `
+            <tr>
+              <td>${esc(item.date)}</td>
+              <td>${esc(item.note)}</td>
+              <td>${item.type === "in" ? "Masuk" : "Keluar"}</td>
+              <td>${money(item.amount)}</td>
+              <td>
+                <button class="smallbtn"
+                  data-del="transactions"
+                  data-id="${esc(item.id)}">Hapus</button>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function scheduleTable() {
+  if (!data.schedule.length) {
+    return empty("Jadwal belum ditambahkan.");
+  }
+
+  return `
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Hari</th><th>Pelajaran</th><th>Jam</th><th></th></tr>
+        </thead>
+        <tbody>
+          ${data.schedule.map(item => `
+            <tr>
+              <td>${esc(item.day)}</td>
+              <td>${esc(item.subject)}</td>
+              <td>${esc(item.time)}</td>
+              <td>
+                <button class="smallbtn"
+                  data-del="schedule"
+                  data-id="${esc(item.id)}">Hapus</button>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+
+/* =====================================
+   8. FORM
+===================================== */
+
+function formAnnouncement() {
+  return `
+    <form id="announcementForm">
+      ${field("Judul pengumuman", "title",
+        "Contoh: Besok memakai seragam olahraga")}
+      <div class="field">
+        <label>Isi pengumuman</label>
+        <textarea name="body" maxlength="1000"
+          placeholder="Tulis informasi untuk teman sekelas..."
+          required></textarea>
+      </div>
+      <button class="btn">Publikasikan</button>
+    </form>`;
+}
+
+function formTask() {
+  return `
+    <form id="taskForm">
+      ${field("Nama tugas / agenda", "title",
+        "Contoh: Kumpulkan rangkuman")}
+      ${field("Mata pelajaran / kategori", "subject",
+        "Contoh: Sejarah")}
+      ${field("Deadline", "deadline", "", "date")}
+      <button class="btn">Tambah tugas</button>
+    </form>`;
+}
+
+function formSchedule() {
+  return `
+    <form id="scheduleForm">
+      <div class="field">
+        <label>Hari</label>
+        <select name="day" required>
+          <option>Senin</option>
+          <option>Selasa</option>
+          <option>Rabu</option>
+          <option>Kamis</option>
+          <option>Jumat</option>
+          <option>Sabtu</option>
+        </select>
+      </div>
+      ${field("Mata pelajaran", "subject", "Contoh: Matematika")}
+      ${field("Jam", "time", "Contoh: 07.00")}
+      <button class="btn">Tambah jadwal</button>
+    </form>`;
+}
+
+function formCash() {
+  return `
+    <form id="cashForm">
+      <div class="field">
+        <label>Jenis transaksi</label>
+        <select name="type" required>
+          <option value="in">Pemasukan</option>
+          <option value="out">Pengeluaran</option>
+        </select>
+      </div>
+      ${field("Nominal (Rp)", "amount", "Contoh: 50000", "number")}
+      ${field("Keterangan", "note", "Contoh: Iuran kelas")}
+      <button class="btn">Simpan transaksi</button>
+    </form>`;
+}
+
+
+/* =====================================
+   9. TAMPILAN DASHBOARD
+===================================== */
+
+function render() {
+  document.querySelectorAll(".nav[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  const balance = total("in") - total("out");
+  let html = "";
+
+  if (page === "dashboard") {
+    html = `
+      <div class="title">
+        <div>
+          <h1>Dashboard kelas</h1>
+          <div class="muted">Hai, ketua! Ini ringkasan workspace XII-C.</div>
+        </div>
+      </div>
+
+      <div class="note">
+        Data diambil dari Google Sheets. Pastikan transaksi kas
+        diperiksa pengurus dan jangan masukkan informasi pribadi sensitif.
+      </div>
+
+      <div class="stats">
+        <section class="card">
+          <div class="label">Saldo kas</div>
+          <div class="value">${money(balance)}</div>
+        </section>
+        <section class="card">
+          <div class="label">Pengumuman</div>
+          <div class="value">${data.announcements.length}</div>
+        </section>
+        <section class="card">
+          <div class="label">Tugas tercatat</div>
+          <div class="value">${data.tasks.length}</div>
+        </section>
+      </div>
+
+      <div class="split">
+        ${card("Pengumuman terbaru",
+          list(data.announcements, "announcements"))}
+        ${card("Tugas & agenda", list(data.tasks, "tasks"))}
+      </div>`;
+  }
+
+  if (page === "pengumuman") {
+    html = `
+      <div class="title">
+        <div>
+          <h1>Pengumuman</h1>
+          <div class="muted">Informasi yang dilihat siswa.</div>
+        </div>
+      </div>
+      <div class="split">
+        ${card("Buat pengumuman", formAnnouncement())}
+        ${card("Daftar pengumuman",
+          list(data.announcements, "announcements"))}
+      </div>`;
+  }
+
+  if (page === "tugas") {
+    html = `
+      <div class="title">
+        <div>
+          <h1>Tugas & agenda</h1>
+          <div class="muted">Kelola deadline tugas kelas.</div>
+        </div>
+      </div>
+      <div class="split">
+        ${card("Tambah tugas", formTask())}
+        ${card("Daftar tugas", list(data.tasks, "tasks"))}
+      </div>`;
+  }
+
+  if (page === "jadwal") {
+    html = `
+      <div class="title">
+        <div>
+          <h1>Jadwal kelas</h1>
+          <div class="muted">Kelola jadwal pelajaran siswa.</div>
+        </div>
+      </div>
+      <div class="split">
+        ${card("Tambah jadwal", formSchedule())}
+        ${card("Jadwal saat ini", scheduleTable())}
+      </div>`;
+  }
+
+  if (page === "kas") {
+    html = `
+      <div class="title">
+        <div>
+          <h1>Kas kelas</h1>
+          <div class="muted">Catat pemasukan dan pengeluaran.</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <section class="card">
+          <div class="label">Saldo</div>
+          <div class="value">${money(balance)}</div>
+        </section>
+        <section class="card">
+          <div class="label">Pemasukan</div>
+          <div class="value">${money(total("in"))}</div>
+        </section>
+        <section class="card">
+          <div class="label">Pengeluaran</div>
+          <div class="value">${money(total("out"))}</div>
+        </section>
+      </div>
+
+      <div class="split">
+        ${card("Catat transaksi", formCash())}
+        ${card("Riwayat transaksi", cashTable())}
+      </div>`;
+  }
+
+  document.getElementById("app").innerHTML = html;
+  bindForms();
+}
+
+
+/* =====================================
+   10. FORM DAN HAPUS DATA
+===================================== */
+
+function bindForms() {
+  const announcementForm =
+    document.getElementById("announcementForm");
+
+  if (announcementForm) {
+    announcementForm.onsubmit = async event => {
+      event.preventDefault();
+
+      const form = new FormData(announcementForm);
+
+      data.announcements.push({
+        id: newId(),
+        title: form.get("title").trim(),
+        body: form.get("body").trim(),
+        date: new Date().toLocaleDateString("id-ID")
+      });
+
+      try {
+        await saveOnline();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  }
+
+  const taskForm = document.getElementById("taskForm");
+
+  if (taskForm) {
+    taskForm.onsubmit = async event => {
+      event.preventDefault();
+
+      const form = new FormData(taskForm);
+
+      data.tasks.push({
+        id: newId(),
+        title: form.get("title").trim(),
+        subject: form.get("subject").trim(),
+        deadline: form.get("deadline")
+      });
+
+      try {
+        await saveOnline();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  }
+
+  const scheduleForm = document.getElementById("scheduleForm");
+
+  if (scheduleForm) {
+    scheduleForm.onsubmit = async event => {
+      event.preventDefault();
+
+      const form = new FormData(scheduleForm);
+
+      data.schedule.push({
+        id: newId(),
+        day: form.get("day"),
+        subject: form.get("subject").trim(),
+        time: form.get("time").trim()
+      });
+
+      try {
+        await saveOnline();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  }
+
+  const cashForm = document.getElementById("cashForm");
+
+  if (cashForm) {
+    cashForm.onsubmit = async event => {
+      event.preventDefault();
+
+      const form = new FormData(cashForm);
+      const amount = Number(form.get("amount"));
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        alert("Masukkan nominal yang valid.");
+        return;
+      }
+
+      data.transactions.push({
+        id: newId(),
+        type: form.get("type"),
+        amount,
+        note: form.get("note").trim(),
+        date: new Date().toLocaleDateString("id-ID")
+      });
+
+      try {
+        await saveOnline();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  }
+
+  document.querySelectorAll("[data-del]").forEach(button => {
+    button.onclick = async () => {
+      if (busy) return;
+
+      if (!confirm("Yakin ingin menghapus data ini?")) return;
+
+      const type = button.dataset.del;
+      const itemId = button.dataset.id;
+      const previous = JSON.parse(JSON.stringify(data));
+
+      data[type] = data[type].filter(
+        item => String(item.id) !== String(itemId)
+      );
+
+      try {
+        await saveOnline();
+      } catch (error) {
+        data = previous;
+        render();
+        alert(error.message);
+      }
+    };
+  });
+}
+
+
+/* =====================================
+   11. NAVIGASI DAN MULAI WEBSITE
+===================================== */
+
+document.querySelectorAll(".nav[data-page]").forEach(button => {
+  button.addEventListener("click", () => {
+    page = button.dataset.page;
+    render();
+  });
+});
+
+document.getElementById("openDisplay").onclick = () => {
+  window.open("display.html", "_blank");
+};
+
+async function startApp() {
+  try {
+    setStatus("Mengambil data dari Google Sheets...");
+
+    data = await remoteLoad();
+
+    setConnection(true);
+    setStatus("Database terhubung. Data berhasil dimuat.", "success");
+    render();
+
+  } catch (error) {
+    setConnection(false);
+    setStatus(
+      "Gagal memuat database: " + error.message +
+      " Pastikan Apps Script sudah di-deploy sebagai Web App " +
+      "dan doGet mendukung JSONP.",
+      "error"
+    );
+
+    render();
+  }
+}
+
+startApp();
+</script>
+</body>
+</html>
