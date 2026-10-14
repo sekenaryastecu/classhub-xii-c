@@ -27,7 +27,7 @@ button{font:inherit;cursor:pointer}.layout{display:flex;min-height:100vh}.side{w
   <div class="side-note"><b>🏫 Kelas XII-C</b><br>Satu tempat untuk informasi dan kebutuhan kelas.</div>
 </aside>
 <main class="main">
-  <header class="top"><div><div class="eyebrow">CLASSHUB / XII-C</div><h2 id="pageTitle">Ringkasan Kelas</h2></div><div class="actions"><div class="status off" id="connection">● <span id="connectionText">Menghubungkan...</span></div><button class="btn" onclick="loadData(true)">↻ Refresh</button></div></header>
+  <header class="top"><div><div class="eyebrow">CLASSHUB / XII-C</div><h2 id="pageTitle">Ringkasan Kelas</h2></div><div class="actions"><div class="status off" id="connection">● <span id="connectionText">Menghubungkan...</span></div><button class="btn" id="refreshDisplayButton" type="button">↻ Refresh</button></div></header>
   <div class="notice" id="notice"></div>
   <section class="page active" id="page-ringkasan">
     <div class="hero"><span class="tag">STUDENT DASHBOARD</span><h3>Welcome to ClassHub 👋</h3><p>Semua informasi kelas XII-C, mulai dari pengumuman, tugas, agenda, hingga jadwal pelajaran, ada di satu tempat.</p><div class="hero-date" id="todayDate">Memuat tanggal...</div></div>
@@ -62,6 +62,7 @@ function taskCard(x){return `<article class="item"><h4>${esc(x.title||"Tanpa jud
 const days=["Senin","Selasa","Rabu","Kamis","Jumat"];
 function scheduleTable(items){if(!items.length)return empty("Jadwal pelajaran belum ditambahkan oleh admin.");let rows=days.map(day=>{let arr=items.filter(x=>String(x.day||"").toLowerCase()===day.toLowerCase()).sort((a,b)=>String(a.time||"").localeCompare(String(b.time||"")));return `<tr><td class="day-head">${day}</td><td>${arr.length?arr.map(x=>`<div style="margin-bottom:8px"><b>${esc(x.time||"Jam belum diatur")}</b> — ${esc(x.subject||"Mata pelajaran")}${x.note?`<div class="muted">${esc(x.note)}</div>`:""}</div>`).join(""):"<span class='muted'>Belum ada jadwal</span>"}</td></tr>`;}).join("");return `<div class="table-wrap"><table><thead><tr><th style="width:110px">Hari</th><th>Jam & Mata Pelajaran</th></tr></thead><tbody>${rows}</tbody></table></div>`;}
 function render(){ $("todayDate").textContent=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});let a=[...data.announcements].sort((x,y)=>String(y.date||"").localeCompare(String(x.date||"")));let t=[...data.tasks].sort((x,y)=>String(x.deadline||"9999").localeCompare(String(y.deadline||"9999")));$("statAnnouncements").textContent=a.length;$("statTasks").textContent=t.length;$("statSchedule").textContent=data.schedule.length;$("homeAnnouncements").innerHTML=a.length?a.slice(0,3).map(annCard).join(""):empty("Belum ada pengumuman.");$("allAnnouncements").innerHTML=a.length?a.map(annCard).join(""):empty("Belum ada pengumuman.");$("homeTasks").innerHTML=t.length?t.slice(0,4).map(taskCard).join(""):empty("Belum ada tugas atau agenda.");$("allTasks").innerHTML=t.length?t.map(taskCard).join(""):empty("Belum ada tugas atau agenda.");$("homeSchedule").innerHTML=scheduleTable(data.schedule);$("allSchedule").innerHTML=scheduleTable(data.schedule);}
+$("refreshDisplayButton").addEventListener("click",()=>loadData(true));
 render();loadData();setInterval(()=>loadData(),15000);
 </script>
 </body></html>

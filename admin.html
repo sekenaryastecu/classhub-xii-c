@@ -3,7 +3,7 @@
 <style>
 :root{--bg:#f4f7fc;--card:#fff;--ink:#17233c;--muted:#71809b;--blue:#3767e8;--line:#e7ecf5;--green:#16865c;--red:#d94b5b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,"Segoe UI",Arial,sans-serif}.wrap{max-width:1100px;margin:auto;padding:24px 16px 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:var(--blue);display:grid;place-items:center;color:white;font-weight:800;font-size:22px}.brand h1{margin:0;font-size:21px}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}.btn{border:1px solid var(--line);background:white;border-radius:10px;padding:10px 13px;cursor:pointer;color:var(--ink);font:inherit}.primary{background:var(--blue);color:white;border-color:var(--blue)}.danger{color:var(--red)}.tabs{display:flex;gap:7px;overflow-x:auto;margin-bottom:18px}.tabs button{white-space:nowrap;border:1px solid var(--line);border-radius:10px;background:white;padding:11px 14px;cursor:pointer}.tabs button.active{background:#eaf0ff;color:var(--blue);border-color:#d9e3ff}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}.panel h2{font-size:16px;margin:0 0 16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #dce3ef;border-radius:9px;font:inherit;background:#fff;color:var(--ink)}textarea{min-height:90px;resize:vertical}.wide{grid-column:1/-1}.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.item{border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.item h3{font-size:13px;margin:0 0 5px}.item p{font-size:12px;color:var(--muted);margin:0;line-height:1.6;white-space:pre-wrap}.item button{flex-shrink:0}.notice{display:none;border-radius:10px;padding:12px 14px;background:#e8f8ef;color:var(--green);margin-bottom:15px;line-height:1.5}.notice.show{display:block}.hint{font-size:12px;line-height:1.6;color:var(--muted);margin-top:0}.empty{text-align:center;border:1px dashed var(--line);padding:20px;border-radius:10px;color:var(--muted);font-size:12px}.page{display:none}.page.active{display:block}.days{display:grid;gap:12px}.daybox{border:1px solid var(--line);border-radius:12px;padding:13px}.daybox h3{font-size:13px;margin:0 0 10px;color:var(--blue)}.small{font-size:11px;color:var(--muted)}@media(max-width:650px){.top{align-items:flex-start}.top h1{font-size:18px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.panel{padding:15px}.item{flex-direction:column}.item button{align-self:flex-end}}
 </style></head><body><main class="wrap">
-<header class="top"><div class="brand"><div class="logo">C</div><div><h1>ClassHub Admin</h1><p>Pengelolaan kelas XII-C</p></div></div><button class="btn" onclick="refreshData()">↻ Muat ulang</button></header>
+<header class="top"><div class="brand"><div class="logo">C</div><div><h1>ClassHub Admin</h1><p>Pengelolaan kelas XII-C</p></div></div><button class="btn" id="refreshButton" type="button">↻ Muat ulang</button></header>
 <div id="notice" class="notice"></div>
 <div class="panel"><p class="hint">Perubahan disimpan ke Google Sheets melalui Apps Script. Token admin diminta saat pertama kali menyimpan; jangan bagikan token ini.</p><div class="small" id="status">Menghubungkan database...</div></div>
 <nav class="tabs"><button class="active" data-page="pengumuman" onclick="showPage('pengumuman')">Pengumuman</button><button data-page="tugas" onclick="showPage('tugas')">Tugas & Agenda</button><button data-page="jadwal" onclick="showPage('jadwal')">Jadwal Pelajaran</button></nav>
@@ -21,7 +21,62 @@ function showPage(p){document.querySelectorAll(".page").forEach(x=>x.classList.t
 function jsonp(){return new Promise((resolve,reject)=>{let cb="classHubAdmin_"+Date.now()+"_"+Math.random().toString(36).slice(2),s=document.createElement("script"),done=false,t;function clean(){if(done)return;done=true;clearTimeout(t);delete window[cb];s.remove();}t=setTimeout(()=>{clean();reject(Error("Koneksi database timeout."));},20000);window[cb]=r=>{clean();r?.ok&&r.data?resolve(r.data):reject(Error(r?.error||"Respons database tidak valid."));};s.onerror=()=>{clean();reject(Error("Tidak bisa memuat Apps Script."));};s.src=API_URL+"?callback="+cb+"&_="+Date.now();document.head.appendChild(s);});}
 async function refreshData(){const refreshBtn=document.querySelector(".top .btn");if(refreshBtn){refreshBtn.disabled=true;refreshBtn.textContent="Memuat...";}try{let r=await jsonp();data={announcements:Array.isArray(r.announcements)?r.announcements:[],tasks:Array.isArray(r.tasks)?r.tasks:[],schedule:Array.isArray(r.schedule)?r.schedule.map(x=>({...x,day:x.day||x.hari||"",time:x.time||x.waktu||"",subject:x.subject||x.mapel||"",note:x.note||x.catatan||""})):[],transactions:Array.isArray(r.transactions)?r.transactions:[]};$("status").textContent="Database terhubung · "+new Date().toLocaleTimeString("id-ID");render();}catch(e){$("status").textContent="Koneksi gagal: "+e.message;note("Gagal memuat data: "+e.message,true);}finally{if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent="↻ Muat ulang";}}}
 function getToken(){let token=sessionStorage.getItem("classhub_admin_token");if(!token){token=prompt("Masukkan token admin ClassHub:");if(token)sessionStorage.setItem("classhub_admin_token",token);}return token;}
-async function saveAll(){if(saving)return;saving=true;try{let token=getToken();if(!token)throw Error("Token admin dibutuhkan.");await fetch(API_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"save",token,data})});await new Promise(r=>setTimeout(r,1800));await refreshData();note("Permintaan simpan sudah dikirim. Karena browser tidak mengizinkan halaman ini membaca balasan POST Apps Script secara langsung, pastikan data muncul lagi setelah refresh dan cek spreadsheet.");}catch(e){note("Gagal mengirim data: "+e.message,true);}finally{saving=false;}}
+function normalizeData(raw){
+  return {
+    announcements:Array.isArray(raw.announcements)?raw.announcements:[],
+    tasks:Array.isArray(raw.tasks)?raw.tasks:[],
+    schedule:Array.isArray(raw.schedule)?raw.schedule.map(x=>({...x,day:x.day||x.hari||"",time:x.time||x.waktu||"",subject:x.subject||x.mapel||"",note:x.note||x.catatan||""})):[],
+    transactions:Array.isArray(raw.transactions)?raw.transactions:[]
+  };
+}
+function sameIds(expected, actual){
+  const ids=a=>a.map(x=>String(x.id)).sort();
+  return ["announcements","tasks","schedule","transactions"].every(k=>JSON.stringify(ids(expected[k]||[]))===JSON.stringify(ids(actual[k]||[])));
+}
+async function saveAll(){
+  if(saving)return;
+  saving=true;
+  const submitButtons=[...document.querySelectorAll('form button[type="submit"],form button:not([type])')];
+  submitButtons.forEach(b=>b.disabled=true);
+  try{
+    const token=getToken();
+    if(!token)throw Error("Token admin dibutuhkan. Simpan dibatalkan.");
+    const expected=normalizeData(JSON.parse(JSON.stringify(data)));
+    note("Menyimpan perubahan ke Google Sheets…");
+    await fetch(API_URL,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"save",token,data:expected})
+    });
+
+    // POST no-cors tidak mengizinkan browser membaca respons. Verifikasi lewat GET/JSONP.
+    let actual=null;
+    for(let attempt=0;attempt<4;attempt++){
+      await new Promise(resolve=>setTimeout(resolve,1000));
+      try{
+        actual=normalizeData(await jsonp());
+        if(sameIds(expected,actual))break;
+      }catch(err){
+        if(attempt===3)throw err;
+      }
+    }
+    if(!actual || !sameIds(expected,actual)){
+      await refreshData();
+      throw Error("Data baru belum ditemukan di database. Periksa Script Properties ADMIN_TOKEN di Apps Script dan pastikan token yang dimasukkan sama persis. Jika baru mengganti Code.gs, deploy sebagai New version.");
+    }
+    data=actual;
+    render();
+    $("status").textContent="Data tersimpan dan terverifikasi · "+new Date().toLocaleTimeString("id-ID");
+    note("Berhasil! Data sudah terbaca kembali dari database.");
+  }catch(e){
+    note("Penyimpanan gagal: "+e.message,true);
+    $("status").textContent="Penyimpanan gagal · periksa token dan deployment Apps Script";
+  }finally{
+    saving=false;
+    submitButtons.forEach(b=>b.disabled=false);
+  }
+}
 function removeItem(type,id){if(!confirm("Hapus item ini?"))return;data[type]=data[type].filter(x=>String(x.id)!==String(id));saveAll();}
 function dateToday(){return new Date().toLocaleDateString("en-CA");}
 $("aDate").value=dateToday();
@@ -30,5 +85,6 @@ $("formTask").addEventListener("submit",e=>{e.preventDefault();data.tasks.unshif
 $("formSchedule").addEventListener("submit",e=>{e.preventDefault();const day=$("sDay").value,time=$("sTime").value.trim(),subject=$("sSubject").value.trim(),noteText=$("sNote").value.trim();data.schedule.push({id:String(Date.now()),day,hari:day,time,waktu:time,subject,mapel:subject,note:noteText,catatan:noteText});e.target.reset();$("sDay").value="Senin";render();saveAll();});
 function listItems(items,type,renderFn){if(!items.length)return '<div class="empty">Belum ada data.</div>';return items.map(x=>`<div class="item"><div>${renderFn(x)}</div><button class="btn danger" onclick="removeItem('${type}','${esc(x.id)}')">Hapus</button></div>`).join("");}
 function render(){ $("announcementList").innerHTML=listItems(data.announcements,"announcements",x=>`<h3>${esc(x.title)}</h3><p>${esc(x.body)}<br><span class="small">${esc(x.date||"Tanggal belum diatur")}</span></p>`);$("taskList").innerHTML=listItems(data.tasks,"tasks",x=>`<h3>${esc(x.title)}</h3><p>${esc(x.subject)} · Tenggat: ${esc(x.deadline||"Belum diatur")}</p>`);let order=["Senin","Selasa","Rabu","Kamis","Jumat"];let sorted=[...data.schedule].sort((a,b)=>order.indexOf(a.day)-order.indexOf(b.day)||String(a.time).localeCompare(String(b.time)));$("scheduleList").innerHTML=sorted.length?order.map(day=>{let arr=sorted.filter(x=>x.day===day);return `<div class="daybox"><h3>${day}</h3>${arr.length?arr.map(x=>`<div class="item"><div><h3>${esc(x.time||"Jam belum diatur")} — ${esc(x.subject||"Mata pelajaran")}</h3><p>${esc(x.note||"")}</p></div><button class="btn danger" onclick="removeItem('schedule','${esc(x.id)}')">Hapus</button></div>`).join(""):'<p class="small">Belum ada jadwal.</p>'}</div>`;}).join(""):'<div class="empty">Jadwal belum ditambahkan.</div>';}
+$("refreshButton").addEventListener("click",()=>refreshData());
 refreshData();
 </script></body></html>
